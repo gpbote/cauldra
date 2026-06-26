@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/managers/game_manager.dart';
+import '../home/home_screen.dart';
+
 class PlayerNameScreen extends StatefulWidget {
   final String gender;
 
@@ -20,13 +23,37 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
 
   final TextEditingController _controller = TextEditingController();
 
+  bool _creating = false;
+
+  bool get validName => _controller.text.trim().length >= 3;
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-  bool get validName => _controller.text.trim().length >= 3;
+  Future<void> _beginJourney() async {
+    if (!validName || _creating) return;
+
+    setState(() {
+      _creating = true;
+    });
+
+    await GameManager.instance.newGame(
+      name: _controller.text.trim(),
+      gender: widget.gender,
+    );
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => const HomeScreen(),
+      ),
+          (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +93,7 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                   child: Column(
                     children: [
                       Icon(
-                        widget.gender == "Male"
+                        widget.gender == 'Male'
                             ? Icons.person
                             : Icons.person_2,
                         color: accentColor,
@@ -74,7 +101,7 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        "Every legend begins with a name.",
+                        'Every legend begins with a name.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: textColor,
@@ -84,7 +111,7 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                       ),
                       const SizedBox(height: 12),
                       const Text(
-                        "Choose wisely. The people of Cauldra will remember it forever.",
+                        'Choose wisely. The people of Cauldra will remember it forever.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white70,
@@ -99,7 +126,7 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                         ),
                         cursorColor: accentColor,
                         decoration: InputDecoration(
-                          hintText: "Enter your name",
+                          hintText: 'Enter your name',
                           hintStyle: const TextStyle(
                             color: Colors.white38,
                           ),
@@ -118,26 +145,26 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: validName
-                              ? () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Welcome ${_controller.text}!',
-                                ),
-                              ),
-                            );
-                          }
+                          onPressed: validName && !_creating
+                              ? _beginJourney
                               : null,
-                          child: const Text(
-                            "BEGIN YOUR JOURNEY",
+                          child: _creating
+                              ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                            ),
+                          )
+                              : const Text(
+                            'BEGIN YOUR JOURNEY',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
