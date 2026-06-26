@@ -5,11 +5,6 @@ class Player extends PositionComponent {
   static const double playerSize = 64;
   static const double moveSpeed = 220;
 
-  /// Current movement direction.
-  /// X = left/right
-  /// Y = up/down
-  ///
-  /// Values should normally be between -1 and 1.
   final Vector2 direction = Vector2.zero();
 
   Player({
@@ -26,7 +21,6 @@ class Player extends PositionComponent {
 
     if (direction.length2 > 0) {
       direction.normalize();
-
       position += direction * moveSpeed * dt;
     }
   }
@@ -52,8 +46,8 @@ class Player extends PositionComponent {
 
     // Shadow
     canvas.drawOval(
-      const Rect.fromCenter(
-        center: Offset(32, 58),
+      Rect.fromCenter(
+        center: const Offset(32, 58),
         width: 28,
         height: 10,
       ),
@@ -63,7 +57,7 @@ class Player extends PositionComponent {
     // Robe
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        const Rect.fromLTWH(12, 18, 40, 42),
+        Rect.fromLTWH(12, 18, 40, 42),
         const Radius.circular(10),
       ),
       robe,

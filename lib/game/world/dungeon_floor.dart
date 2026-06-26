@@ -2,13 +2,13 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 class DungeonFloor extends PositionComponent {
-  final double width;
-  final double height;
+  final double floorWidth;
+  final double floorHeight;
   final double tileSize;
 
   DungeonFloor({
-    required this.width,
-    required this.height,
+    required this.floorWidth,
+    required this.floorHeight,
     this.tileSize = 64,
   });
 
@@ -16,9 +16,9 @@ class DungeonFloor extends PositionComponent {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    for (double y = 0; y < height; y += tileSize) {
-      for (double x = 0; x < width; x += tileSize) {
-        final bool alternate =
+    for (double y = 0; y < floorHeight; y += tileSize) {
+      for (double x = 0; x < floorWidth; x += tileSize) {
+        final isDarkTile =
             ((x / tileSize).toInt() + (y / tileSize).toInt()).isEven;
 
         add(
@@ -26,7 +26,7 @@ class DungeonFloor extends PositionComponent {
             position: Vector2(x, y),
             size: Vector2.all(tileSize),
             paint: Paint()
-              ..color = alternate
+              ..color = isDarkTile
                   ? const Color(0xFF2A2926)
                   : const Color(0xFF242320),
           ),
@@ -37,7 +37,7 @@ class DungeonFloor extends PositionComponent {
     add(
       RectangleComponent(
         position: Vector2.zero(),
-        size: Vector2(width, height),
+        size: Vector2(floorWidth, floorHeight),
         paint: Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = 8

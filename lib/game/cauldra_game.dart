@@ -1,8 +1,8 @@
-import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'entities/player.dart';
 import 'world/dungeon_floor.dart';
@@ -39,8 +39,8 @@ class CauldraGame extends FlameGame with KeyboardEvents {
 
     await gameWorld.add(
       DungeonFloor(
-        width: worldWidth,
-        height: worldHeight,
+        floorWidth: worldWidth,
+        floorHeight: worldHeight,
       ),
     );
 
