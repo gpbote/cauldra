@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/managers/game_manager.dart';
-import '../home/home_screen.dart';
+import '../workshop/workshop_screen.dart';
 
 class PlayerNameScreen extends StatefulWidget {
   final String gender;
@@ -34,7 +34,9 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
   }
 
   Future<void> _beginJourney() async {
-    if (!validName || _creating) return;
+    if (!validName || _creating) {
+      return;
+    }
 
     setState(() {
       _creating = true;
@@ -45,11 +47,13 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
       gender: widget.gender,
     );
 
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (_) => const HomeScreen(),
+        builder: (_) => const WorkshopScreen(),
       ),
           (route) => false,
     );
@@ -139,15 +143,19 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
                         onChanged: (_) {
                           setState(() {});
                         },
+                        onSubmitted: (_) {
+                          if (validName && !_creating) {
+                            _beginJourney();
+                          }
+                        },
                       ),
                       const SizedBox(height: 30),
                       SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: validName && !_creating
-                              ? _beginJourney
-                              : null,
+                          onPressed:
+                          validName && !_creating ? _beginJourney : null,
                           child: _creating
                               ? const SizedBox(
                             width: 24,
