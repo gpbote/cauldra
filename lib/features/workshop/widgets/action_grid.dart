@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../inventory/inventory_screen.dart';
 import 'action_tile.dart';
 
 class ActionGrid extends StatelessWidget {
@@ -51,11 +52,22 @@ class ActionGrid extends StatelessWidget {
           icon: action.$1,
           label: action.$2,
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${action.$2} coming soon'),
-              ),
-            );
+            switch (action.$2) {
+              case 'Inventory':
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const InventoryScreen(),
+                  ),
+                );
+                break;
+
+              default:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${action.$2} coming soon'),
+                  ),
+                );
+            }
           },
         );
       },
