@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../brewing/brewing_screen.dart';
 import '../../inventory/inventory_screen.dart';
+import '../../shop/shop_screen.dart';
 import 'action_tile.dart';
 
 class ActionGrid extends StatelessWidget {
@@ -9,30 +11,12 @@ class ActionGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      (
-      Icons.backpack_outlined,
-      'Inventory',
-      ),
-      (
-      Icons.science_outlined,
-      'Brew',
-      ),
-      (
-      Icons.menu_book_outlined,
-      'Recipe Book',
-      ),
-      (
-      Icons.people_outline,
-      'Customers',
-      ),
-      (
-      Icons.storefront_outlined,
-      'Shop',
-      ),
-      (
-      Icons.book_outlined,
-      'Journal',
-      ),
+      (Icons.backpack_outlined, 'Inventory'),
+      (Icons.science_outlined, 'Brew'),
+      (Icons.menu_book_outlined, 'Recipe Book'),
+      (Icons.people_outline, 'Customers'),
+      (Icons.storefront_outlined, 'Shop'),
+      (Icons.book_outlined, 'Journal'),
     ];
 
     return GridView.builder(
@@ -54,9 +38,28 @@ class ActionGrid extends StatelessWidget {
           onTap: () {
             switch (action.$2) {
               case 'Inventory':
-                Navigator.of(context).push(
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
                     builder: (_) => const InventoryScreen(),
+                  ),
+                );
+                break;
+
+              case 'Brew':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const BrewingScreen(),
+                  ),
+                );
+                break;
+
+              case 'Shop':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ShopScreen(),
                   ),
                 );
                 break;
