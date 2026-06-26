@@ -1,11 +1,11 @@
-import '../../features/brewing/models/recipe.dart';
-import '../../features/inventory/models/inventory_item.dart';
+import '../services/inventory_service.dart';
+import '../../features/brewing_v2/models/recipe.dart';
 
 class BrewingResult {
   final bool success;
   final String message;
 
-  BrewingResult({
+  const BrewingResult({
     required this.success,
     required this.message,
   });
@@ -16,58 +16,30 @@ class BrewingService {
 
   static final BrewingService instance = BrewingService._();
 
-  bool canBrew({
-    required Recipe recipe,
-    required List<InventoryItem> inventory,
-  }) {
-    for (final entry in recipe.ingredients.entries) {
-      final item = inventory.firstWhere(
-            (e) => e.name == entry.key,
-        orElse: () => InventoryItem(
-          id: '',
-          name: '',
-          category: '',
-          description: '',
-          icon: '',
-          quantity: 0,
-        ),
-      );
+  final InventoryService _inventory = InventoryService.instance;
 
-      if (item.quantity < entry.value) {
+  bool canBrew(Recipe recipe) {
+    for (final ingredient in recipe.ingredients.entries) {
+      if (_inventory.quantityOf(ingredient.key) < ingredient.value) {
         return false;
       }
     }
+
     return true;
   }
 
-  List<InventoryItem> consumeIngredients({
-    required Recipe recipe,
-    required List<InventoryItem> inventory,
-  }) {
-    return inventory.map((item) {
-      final requiredQty = recipe.ingredients[item.name];
-
-      if (requiredQty == null) return item;
-
-      return item.copyWith(
-        quantity: item.quantity - requiredQty,
-      );
-    }).toList();
-  }
-
-  BrewingResult brew({
-    required Recipe recipe,
-    required List<InventoryItem> inventory,
-  }) {
-    final canBrewNow = canBrew(
-      recipe: recipe,
-      inventory: inventory,
-    );
-
-    if (!canBrewNow) {
-      return BrewingResult(
+  BrewingResult brew(Recipe recipe) {
+    if (!canBrew(recipe)) {
+      return const BrewingResult(
         success: false,
-        message: 'Not enough ingredients',
+        message: 'Not enough ingredients.',
+      );
+    }
+
+    for (final ingredient in recipe.ingredients.entries) {
+      _inventory.removeItem(
+        ingredient.key,
+        quantity: ingredient.value,
       );
     }
 

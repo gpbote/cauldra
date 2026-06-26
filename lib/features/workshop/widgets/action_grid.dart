@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../brewing/brewing_screen.dart';
-import '../../inventory/inventory_screen.dart';
+import '../../brewing_v2/brewing_screen.dart';
+import '../../inventory_v2/inventory_screen.dart';
 import '../../shop/shop_screen.dart';
 import 'action_tile.dart';
 

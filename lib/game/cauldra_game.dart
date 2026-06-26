@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'entities/herb_node.dart';
 import 'entities/player.dart';
 import 'world/dungeon_floor.dart';
 
@@ -16,6 +17,8 @@ class CauldraGame extends FlameGame with KeyboardEvents {
   late final World gameWorld;
   late final CameraComponent gameCamera;
   late final Player player;
+
+  final List<HerbNode> herbNodes = [];
 
   @override
   Color backgroundColor() => gameBackgroundColor;
@@ -84,6 +87,28 @@ class CauldraGame extends FlameGame with KeyboardEvents {
       ),
     );
 
+    final herb1 = HerbNode(
+      position: Vector2(320, 220),
+    );
+
+    final herb2 = HerbNode(
+      position: Vector2(860, 260),
+    );
+
+    final herb3 = HerbNode(
+      position: Vector2(560, 520),
+    );
+
+    herbNodes.addAll([
+      herb1,
+      herb2,
+      herb3,
+    ]);
+
+    await gameWorld.add(herb1);
+    await gameWorld.add(herb2);
+    await gameWorld.add(herb3);
+
     player = Player(
       position: Vector2(
         worldWidth / 2,
@@ -121,6 +146,17 @@ class CauldraGame extends FlameGame with KeyboardEvents {
     if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
         keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
       player.direction.y = 1;
+    }
+
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.keyE) {
+      for (final herb in herbNodes) {
+        if (herb.canCollect &&
+            herb.isPlayerInRange(player.position)) {
+          herb.collect();
+          break;
+        }
+      }
     }
 
     return KeyEventResult.handled;

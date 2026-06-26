@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 class HerbNode extends PositionComponent {
   static const double nodeSize = 48;
 
+  /// Maximum distance at which the player can harvest.
+  static const double collectionRadius = 60;
+
   HerbNode({
     Vector2? position,
   }) : super(
@@ -13,6 +16,18 @@ class HerbNode extends PositionComponent {
   );
 
   bool collected = false;
+
+  bool get canCollect => !collected;
+
+  /// Marks this herb as harvested.
+  void collect() {
+    collected = true;
+  }
+
+  /// Returns true if the player is close enough to harvest.
+  bool isPlayerInRange(Vector2 playerPosition) {
+    return position.distanceTo(playerPosition) <= collectionRadius;
+  }
 
   @override
   void render(Canvas canvas) {
