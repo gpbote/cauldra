@@ -13,7 +13,6 @@ class PlayerProfile {
 
   final int workshopLevel;
 
-  final List<String> knownRecipes;
   final List<String> inventory;
 
   const PlayerProfile({
@@ -26,9 +25,6 @@ class PlayerProfile {
     this.energy = 100,
     this.currentDay = 1,
     this.workshopLevel = 1,
-    this.knownRecipes = const [
-      'Minor Healing Potion',
-    ],
     this.inventory = const [],
   });
 
@@ -42,7 +38,6 @@ class PlayerProfile {
     int? energy,
     int? currentDay,
     int? workshopLevel,
-    List<String>? knownRecipes,
     List<String>? inventory,
   }) {
     return PlayerProfile(
@@ -55,7 +50,6 @@ class PlayerProfile {
       energy: energy ?? this.energy,
       currentDay: currentDay ?? this.currentDay,
       workshopLevel: workshopLevel ?? this.workshopLevel,
-      knownRecipes: knownRecipes ?? this.knownRecipes,
       inventory: inventory ?? this.inventory,
     );
   }
@@ -71,7 +65,6 @@ class PlayerProfile {
       'energy': energy,
       'currentDay': currentDay,
       'workshopLevel': workshopLevel,
-      'knownRecipes': knownRecipes,
       'inventory': inventory,
     };
   }
@@ -87,12 +80,7 @@ class PlayerProfile {
       energy: json['energy'] ?? 100,
       currentDay: json['currentDay'] ?? 1,
       workshopLevel: json['workshopLevel'] ?? 1,
-      knownRecipes: List<String>.from(
-        json['knownRecipes'] ?? const ['Minor Healing Potion'],
-      ),
-      inventory: List<String>.from(
-        json['inventory'] ?? const [],
-      ),
+      inventory: List<String>.from(json['inventory'] ?? []),
     );
   }
 }

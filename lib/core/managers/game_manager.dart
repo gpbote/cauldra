@@ -38,31 +38,32 @@ class GameManager {
     _player = null;
   }
 
-  /// 🔥 TRUE STATE UPDATE (IMPORTANT FIX)
   void updatePlayer(PlayerProfile updated) {
     _player = updated;
     _saveService.savePlayer(updated);
   }
 
-  /// 🔥 ADD GOLD (used for brewing later)
-  void addGold(int amount) {
+  // =========================
+  // INVENTORY SYSTEM (GLOBAL)
+  // =========================
+
+  void addItem(String itemId) {
     if (_player == null) return;
 
-    _player = _player!.copyWith(
-      gold: _player!.gold + amount,
-    );
+    final updated = List<String>.from(_player!.inventory)
+      ..add(itemId);
 
+    _player = _player!.copyWith(inventory: updated);
     saveGame();
   }
 
-  /// 🔥 ADD REPUTATION (brewing progression)
-  void addReputation(int amount) {
+  void removeItem(String itemId) {
     if (_player == null) return;
 
-    _player = _player!.copyWith(
-      reputation: _player!.reputation + amount,
-    );
+    final updated = List<String>.from(_player!.inventory)
+      ..remove(itemId);
 
+    _player = _player!.copyWith(inventory: updated);
     saveGame();
   }
 }
