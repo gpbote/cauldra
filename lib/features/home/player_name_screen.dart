@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../core/managers/game_manager.dart';
+import '../../core/models/player_profile.dart';
+import '../../core/services/save_service.dart';
+import '../../shared/widgets/game_button.dart';
+import '../../shared/widgets/game_header.dart';
+import '../../shared/widgets/game_panel.dart';
 import '../workshop/workshop_screen.dart';
 
 class PlayerNameScreen extends StatefulWidget {
@@ -16,16 +20,7 @@ class PlayerNameScreen extends StatefulWidget {
 }
 
 class _PlayerNameScreenState extends State<PlayerNameScreen> {
-  static const Color backgroundColor = Color(0xFF1B1A17);
-  static const Color cardColor = Color(0xFF31291E);
-  static const Color accentColor = Color(0xFFD4A44A);
-  static const Color textColor = Color(0xFFF7F1E3);
-
   final TextEditingController _controller = TextEditingController();
-
-  bool _creating = false;
-
-  bool get validName => _controller.text.trim().length >= 3;
 
   @override
   void dispose() {
@@ -33,149 +28,147 @@ class _PlayerNameScreenState extends State<PlayerNameScreen> {
     super.dispose();
   }
 
-  Future<void> _beginJourney() async {
-    if (!validName || _creating) {
+  Future<void> _continue() async {
+    final name = _controller.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Please enter your apprentice name.',
+          ),
+        ),
+      );
       return;
     }
 
-    setState(() {
-      _creating = true;
-    });
-
-    await GameManager.instance.newGame(
-      name: _controller.text.trim(),
+    final profile = PlayerProfile(
+      name: name,
       gender: widget.gender,
+      level: 1,
+      experience: 0,
+      gold: 100,
+      reputation: 0,
+      energy: 100,
+      currentDay: 1,
+      workshopLevel: 1,
+      inventory: const [],
     );
 
-    if (!mounted) {
-      return;
-    }
+    final saveService = SaveService();
+    await saveService.savePlayer(profile);
 
-    Navigator.of(context).pushAndRemoveUntil(
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
       MaterialPageRoute(
         builder: (_) => const WorkshopScreen(),
       ),
-          (route) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        backgroundColor: backgroundColor,
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          'Name Your Apprentice',
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      backgroundColor: const Color(0xFF1B1A17),
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(30),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 420,
-              ),
-              child: Card(
-                color: cardColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  side: const BorderSide(
-                    color: accentColor,
-                    width: 2,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 700,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const GameHeader(
+                    title: 'Cauldra',
+                    subtitle: 'Name Your Apprentice',
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    children: [
-                      Icon(
-                        widget.gender == 'Male'
-                            ? Icons.person
-                            : Icons.person_2,
-                        color: accentColor,
-                        size: 110,
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Every legend begins with a name.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Choose wisely. The people of Cauldra will remember it forever.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-                      TextField(
-                        controller: _controller,
-                        style: const TextStyle(
-                          color: textColor,
-                        ),
-                        cursorColor: accentColor,
-                        decoration: InputDecoration(
-                          hintText: 'Enter your name',
-                          hintStyle: const TextStyle(
-                            color: Colors.white38,
-                          ),
-                          filled: true,
-                          fillColor: Colors.black26,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
+
+                  const SizedBox(height: 40),
+
+                  GamePanel(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Every great alchemist begins with a name.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
                           ),
                         ),
-                        onChanged: (_) {
-                          setState(() {});
-                        },
-                        onSubmitted: (_) {
-                          if (validName && !_creating) {
-                            _beginJourney();
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed:
-                          validName && !_creating ? _beginJourney : null,
-                          child: _creating
-                              ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 3,
+
+                        const SizedBox(height: 28),
+
+                        TextField(
+                          controller: _controller,
+                          autofocus: true,
+                          maxLength: 20,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: InputDecoration(
+                            counterText: '',
+                            hintText: 'Enter Name',
+                            hintStyle: const TextStyle(
+                              color: Colors.white38,
                             ),
-                          )
-                              : const Text(
-                            'BEGIN YOUR JOURNEY',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                            filled: true,
+                            fillColor: const Color(0xFF241D15),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A44A),
+                                width: 2,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A44A),
+                                width: 2,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFD4A44A),
+                                width: 3,
+                              ),
                             ),
                           ),
+                          onSubmitted: (_) => _continue(),
                         ),
-                      ),
-                    ],
+
+                        const SizedBox(height: 30),
+
+                        GameButton(
+                          text: 'Continue',
+                          width: 220,
+                          onPressed: _continue,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    'Gender: ${widget.gender}',
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
